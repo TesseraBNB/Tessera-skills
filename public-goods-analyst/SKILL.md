@@ -24,4 +24,63 @@ An autonomous agent for evaluating Ethereum public-goods projects with evidence,
 - Comparing quadratic-funding mechanisms
 - Building trust profiles from donor behavior
 - Scanning an address across EVM chains (balances, txs, contracts, USDC/USDT/DAI)
-- Gener
+- Generating evidence-based evaluation reports (PDF)
+
+## Setup
+
+The agent needs one AI backend — set either in `.env`:
+
+```bash
+cp .env.example .env
+# HERMES_BASE_URL (+ HERMES_TOKEN)  — relay to a real Claude Code Opus 4.8 agent, or
+# ANTHROPIC_API_KEY                 — direct Anthropic API (fallback / simplest)
+```
+
+Quantitative commands and on-chain scanning work without any AI backend.
+
+## Commands
+
+### Flagship
+
+```bash
+./tessera analyze-project <0xaddr> [-e <epoch>] [-n <oso-name>]      # multi-source project intelligence + PDF
+./tessera evaluate "Project Name" -d "Description" [-g <github-url>] # 8-dimension proposal evaluation + PDF
+```
+
+### Quantitative (no AI backend needed)
+
+```bash
+./tessera status                 # connectivity (Octant, Gitcoin, OSO, 9 RPCs) + agent backend
+./tessera providers              # agent model + backends (Hermes → Anthropic)
+./tessera list-projects -e 5
+./tessera analyze-epoch -e 5     # k-means clustering + composite scoring
+./tessera detect-anomalies -e 5  # whale concentration + coordinated patterns
+./tessera trust-graph -e 5       # donor diversity, Jaccard overlap, coordination risk
+./tessera simulate -e 5          # compare 4 QF mechanisms
+./tessera track-project <addr>   # cross-epoch timeline + temporal anomalies
+./tessera scan-chain <addr>      # 11 EVM chains incl. BSC/opBNB (balance, txs, USDC/USDT/DAI/FDUSD)
+./tessera gitcoin-rounds -r ID
+```
+
+### Qualitative (requires an AI backend)
+
+```bash
+./tessera deep-eval <addr> [-n name]
+./tessera scan-proposal "Name" -d "text"
+./tessera extract-metrics "text"
+./tessera report-epoch -e 5
+./tessera collect-signals <name-or-repo>
+```
+
+### Server
+
+```bash
+./tessera serve                  # HTTP API on :8080 (set PORT to override)
+```
+
+Exposes fast JSON endpoints plus streaming agent endpoints:
+
+- `GET /api/agent/analyze?address=…` — **SSE**: live tool-calls → report + PDF
+- `GET /api/agent/evaluate?name=…&description=…&githubURL=…` — **SSE**
+- `GET /api/agent/chat?message=…` — **SSE**: open-ended agent
+- `GET /api/analyze-epoch?epoch=…`, `/api/trust-graph`, `/api/sim
